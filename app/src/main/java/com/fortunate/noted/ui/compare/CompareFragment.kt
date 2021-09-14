@@ -11,9 +11,9 @@ import android.widget.TextView
 import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import com.fortunate.noted.ListsToCompare
 import com.fortunate.noted.R
-import com.fortunate.noted.getSubItems
+import com.fortunate.noted.database.ListsToCompare
+import com.fortunate.noted.database.getSubItems
 
 class CompareFragment : Fragment() {
 

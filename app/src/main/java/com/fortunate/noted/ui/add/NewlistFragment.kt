@@ -12,18 +12,14 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.fortunate.noted.R
-import com.fortunate.noted.addList
-import com.fortunate.noted.getSubItems
+import com.fortunate.noted.database.getSubItems
 
 class NewlistFragment : Fragment() {
 
     private lateinit var newlistViewModel: NewlistViewModel
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,13 +27,13 @@ class NewlistFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         newlistViewModel =
-            ViewModelProviders.of(this).get(NewlistViewModel::class.java)
+            ViewModelProvider(this).get(NewlistViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_newlist, container, false)
         val textView: TextView = root.findViewById(R.id.text_newlist)
         val elements: TextView = root.findViewById(R.id.elements_adding)
-        newlistViewModel.listItem.observe(viewLifecycleOwner, Observer {
+        newlistViewModel.listItem.observe(viewLifecycleOwner, {
             textView.text = it.list.title
-            elements.text = getSubItems(it)
+            elements.text = getSubItems(newlistViewModel.listItem.value!!)
         })
         val editTitle: AppCompatEditText = root.findViewById(R.id.edit_title)
         editTitle.addTextChangedListener(object :TextWatcher {
@@ -65,7 +61,7 @@ class NewlistFragment : Fragment() {
 
         val submit: Button = root.findViewById(R.id.submit_newlist)
         submit.setOnClickListener {
-            addList(newlistViewModel.listItem.value!!)
+            newlistViewModel.commit()
             Navigation.findNavController(it).navigate(R.id.navigation_listcontainer)
         }
         val cancel: Button = root.findViewById(R.id.cancel_newlist)

@@ -8,10 +8,8 @@ interface ListDao {
     @Query("SELECT * FROM list")
     fun getAll(): List<com.fortunate.noted.database.List>
 
-    @Query("SELECT * FROM list WHERE title LIKE '%Favorite%'")
-    fun getAllFavorites(): List<ListWithListItems>
-
-    @Query("SELECT * FROM list WHERE title LIKE '%:query%'")
+    @Transaction
+    @Query("SELECT * FROM list WHERE title LIKE :query")
     fun searchLists(query: String) : List<ListWithListItems>
 
     @Transaction

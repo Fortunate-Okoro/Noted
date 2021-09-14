@@ -10,9 +10,11 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.fortunate.noted.*
+import com.fortunate.noted.database.ListRepository
+import com.fortunate.noted.database.ListsToCompare
 
 class DeleteFragment : Fragment() {
-
+    private lateinit var dataRepo: ListRepository
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,17 +23,17 @@ class DeleteFragment : Fragment() {
     ): View? {
         val root = inflater.inflate(R.layout.fragment_delete, container, false)
         val deleteButtons = root.findViewById<LinearLayout>(R.id.delete_buttons)
-
-        getLists().forEachIndexed { _, listItem ->
+        dataRepo = ListRepository()
+        dataRepo.getAll().forEachIndexed { _, list ->
             val newButton = Button(context)
-            newButton.text = listItem.list.title
+            newButton.text = list.list.title
             newButton.setOnClickListener {
                 AlertDialog.Builder(context)
                     .setTitle("Delete List")
-                    .setMessage("Do you really want to delete list \"".plus(listItem.list.title).plus("\"?"))
+                    .setMessage("Do you really want to delete list \"".plus(list.list.title).plus("\"?"))
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton("Delete") { _, _ ->
-                        deleteList(listItem)
+                        dataRepo.remove(dataRepo.getAll().indexOf(list))
                         ListsToCompare.clear()
                         Navigation.findNavController(it).navigate(R.id.navigation_listcontainer)
                     }

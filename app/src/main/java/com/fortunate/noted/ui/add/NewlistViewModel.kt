@@ -5,14 +5,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.fortunate.noted.database.ListItem
+import com.fortunate.noted.database.ListItemRepository
+import com.fortunate.noted.database.ListRepository
 import com.fortunate.noted.database.ListWithListItems
-import com.fortunate.noted.getListItems
-import com.fortunate.noted.getLists
 
 class NewlistViewModel : ViewModel() {
 
-    private val lastId = getLists().last().list.uid
-    private val lastElementId = getListItems().last().uid
+    private val datapage: ListRepository = ListRepository()
+
+    private val listItemsRepo : ListItemRepository = ListItemRepository()
+
+    private val lastId = if (datapage.getAll().isNotEmpty()) datapage.getAll().last().list.uid else 0
+    private val lastElementId = if (listItemsRepo.getAll().isNotEmpty()) listItemsRepo.getAll().last().uid else 0
+    private var indexToList = 0
 
     private var _listItem = MutableLiveData<ListWithListItems>().apply {
         value = ListWithListItems(com.fortunate.noted.database.List(lastId + 1, "Example title"), mutableListOf())
@@ -25,8 +30,11 @@ class NewlistViewModel : ViewModel() {
         val currentVal = _listItem.value ?: return
         val elements = currentVal.ListItems
         _listItem.postValue(ListWithListItems(com.fortunate.noted.database.List(currentVal.list.uid, currentVal.list.title), elements.plus(
-            ListItem(lastElementId + 1, currentVal.list.uid, item))))
+            ListItem(lastElementId + 1, currentVal.list.uid, item, indexToList))))
         Log.e("list uid", currentVal.list.uid.toString())
-        Log.e("list element uid", (getListItems().size + 1).toString())
+        Log.e("list element uid", (listItemsRepo.getAll().size + 1).toString())
+    }
+    fun commit() {
+        datapage.insert(listItem.value!!)
     }
 }
